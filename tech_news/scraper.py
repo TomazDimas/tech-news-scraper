@@ -1,12 +1,12 @@
 import requests
 import time
+from parsel import Selector
 
 
 # Requisito 1
 def fetch(url):
     time.sleep(1)
     headers = {"user-agent": "Fake user-agent"}
-    # print('entrou')
     try:
         response = requests.get(url, timeout=3, headers=headers)
         print(response)
@@ -18,7 +18,11 @@ def fetch(url):
 
 # Requisito 2
 def scrape_updates(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(text=html_content)
+    url_list = selector.css(
+        ".cs-overlay.cs-overlay-hover a::attr(href)"
+    ).getall()
+    return url_list
 
 
 # Requisito 3
