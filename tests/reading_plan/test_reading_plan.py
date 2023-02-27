@@ -1,9 +1,7 @@
 import pytest
 from unittest.mock import patch
 from tech_news import database
-from tech_news.analyzer.reading_plan import (
-    ReadingPlanService,
-)  # noqa: F401, E261, E501
+from tech_news.analyzer.reading_plan import ReadingPlanService  # noqa: F401, E261, E501
 
 
 @pytest.fixture
