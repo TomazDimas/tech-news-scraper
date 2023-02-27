@@ -1,5 +1,6 @@
 import requests
 import time
+from tech_news.database import create_news
 from parsel import Selector
 
 
@@ -44,11 +45,8 @@ def scrape_news(html_content):
     reading_time = int(
         selector.css(".meta-reading-time::text").get().split(" ")[0]
     )
-    summary = selector.css(
-        ".entry-content > p:first-of-type *::text"
-    ).getall()
+    summary = selector.css(".entry-content > p:first-of-type *::text").getall()
     category = selector.css(".label::text").get()
-    print(url)
 
     news_dict = {
         "url": url,
@@ -59,15 +57,18 @@ def scrape_news(html_content):
         "summary": "".join(summary).strip(),
         "category": category,
     }
-    print(news_dict)
     return news_dict
 
 
 # Requisito 5
 def get_tech_news(amount):
-    """Seu código deve vir aqui"""
+    html_content = fetch("https://blog.betrybe.com/")
+    news_urls = scrape_updates(html_content)
 
+    while len(news_urls) < amount:
+        html_content = fetch(scrape_next_page_link(html_content))
+        news_urls.extend(scrape_updates(html_content))
 
-scrape_news(
-    fetch("https://blog.betrybe.com/tecnologia/mark-zuckerberg-metaverso/")
-)
+    scrapped_news = [scrape_news(fetch(url)) for url in news_urls[:amount]]
+    create_news(scrapped_news)
+    return scrapped_news
